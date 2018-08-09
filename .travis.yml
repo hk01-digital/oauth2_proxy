@@ -8,8 +8,9 @@ script:
   - mkdir ../github.com
   - mkdir ../github.com/bitly
   - cp -R ./ ../github.com/bitly
-  - ../github.com/bitly/dep ensure
-  - ../github.com/bitly/test.sh
+  - cd ../github.com/bitly
+  - ./dep ensure
+  - ./test.sh
 sudo: false
 notifications:
   email: false
