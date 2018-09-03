@@ -1,12 +1,50 @@
-language: go
-go:
-  - 1.8.x
-  - 1.9.x
-script:
-  - wget -O dep https://github.com/golang/dep/releases/download/v0.3.2/dep-linux-amd64
-  - chmod +x dep
-  - ./dep ensure
-  - ./test.sh
-sudo: false
-notifications:
-  email: false
+jobs: 
+  include:
+#    - stage: test
+#      language: go
+#      go:
+#        - 1.8.x
+#        - 1.9.x
+#      script:
+#        - wget -O dep https://github.com/golang/dep/releases/download/v0.3.2/dep-linux-amd64
+#        - chmod +x dep
+#        - ./dep ensure
+#        - ./test.sh
+#      sudo: false
+#      notifications:
+#        email: false
+    - stage: build
+      if: branch =~ ^master$ AND type != pull_request
+
+      language: bash
+
+      group: stable
+      dist: trusty
+      os: linux
+
+      cache: pip
+
+      install: skip
+      script: |
+        registry_id=714417329994
+        region=ap-southeast-1
+        registry="${registry_id}.dkr.ecr.${region}.amazonaws.com"
+
+        project=oauth2-proxy-nginx
+
+        tag_latest="$registry/$project:latest"
+        tag_build_num="$registry/$project:v${TRAVIS_BUILD_NUMBER}-build"
+        tag_commit_hash="$registry/$project:commit-${TRAVIS_COMMIT}"
+
+        docker build \
+        -t $tag_latest \
+        -t $tag_build_num \
+        -t $tag_commit_hash \
+        .
+
+        pip install awscli --upgrade --user
+        $(aws ecr get-login --registry-ids $registry_id --region $region --no-include-email)
+
+        docker push $tag_build_num
+        docker push $tag_latest
+
