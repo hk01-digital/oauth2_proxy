@@ -24,5 +24,6 @@ STOPSIGNAL SIGTERM
 # ENTRYPOINT ["/root/oauth2_proxy"]
 
 COPY ./startup.sh /root/startup.sh
+COPY ./email_list /root/email_list
 
 CMD /root/startup.sh
