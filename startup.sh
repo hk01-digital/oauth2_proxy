@@ -9,4 +9,5 @@ service nginx start
    --client-id=$OAUTH2_PROXY_CLIENT_ID \
    --client-secret=$OAUTH2_PROXY_CLIENT_SECRET \
    --http-address=0.0.0.0:4180 \
-   --set-xauthrequest
+   --set-xauthrequest \
+   --authenticated-emails-file=./email_list
