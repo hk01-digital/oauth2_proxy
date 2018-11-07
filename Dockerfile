@@ -1,16 +1,17 @@
 FROM golang:1.9 AS builder
 
 WORKDIR /go/src/github.com/hk01-digital/oauth2_proxy
-COPY . /go/src/github.com/hk01-digital/oauth2_proxy/
-RUN go get -d -v
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo .
+COPY . .
+RUN go get -d -v \
+    && CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo .
 
 FROM nginx:1.15
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
-COPY nginx/proxy_pass_domain.conf /etc/nginx/proxy_pass_domain.conf
+COPY nginx/. /etc/nginx/.
 
-RUN apt-get update
-RUN apt-get -y install ca-certificates
+RUN apt-get update \
+    && apt-get -y install \
+        ca-certificates \
+    && apt-get clean
 
 WORKDIR /root/
 COPY --from=builder /go/src/github.com/hk01-digital/oauth2_proxy/oauth2_proxy .
@@ -25,5 +26,7 @@ STOPSIGNAL SIGTERM
 
 COPY ./startup.sh /root/startup.sh
 COPY ./email_list /root/email_list
+
+ENV UPSTREAM=http://127.0.0.1:80
 
 CMD /root/startup.sh
