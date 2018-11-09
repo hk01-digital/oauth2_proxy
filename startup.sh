@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ ! -f /etc/proxy_pass_domain.conf ]; then
+    envsubst < /etc/nginx/proxy_pass_domain.conf.template > /etc/nginx/proxy_pass_domain.conf
+fi
+
 service nginx start
 
 ./oauth2_proxy \
