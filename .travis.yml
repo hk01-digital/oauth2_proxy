@@ -1,4 +1,4 @@
-if: branch =~ ^master$|^development$|^ci- AND type != pull_request
+
 language: python
 group: stable
 dist: trusty
@@ -12,20 +12,22 @@ cache: pip
 
 jobs:
   include:
-    # - stage: test
-    #   language: go
-    #   go:
-    #     - 1.8.x
-    #     - 1.9.x
-    #   script:
-    #     - wget -O dep https://github.com/golang/dep/releases/download/v0.3.2/dep-linux-amd64
-    #     - chmod +x dep
-    #     - ./dep ensure
-    #     - ./test.sh
-    #   sudo: false
-    #   notifications:
-    #     email: false
+    - stage: test
+      language: go
+      go:
+        - 1.8.x
+        - 1.9.x
+      script:
+        - skip
+        # - wget -O dep https://github.com/golang/dep/releases/download/v0.3.2/dep-linux-amd64
+        # - chmod +x dep
+        # - ./dep ensure
+        # - ./test.sh
+      sudo: false
+      notifications:
+        email: false
     - stage: deploy
+      if: branch =~ ^master$|^development$|^ci- AND type != pull_request
       script: |
         set -ex
         if [ "master" == "${TRAVIS_BRANCH}" ]; then
